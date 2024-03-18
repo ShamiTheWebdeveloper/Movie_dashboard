@@ -12,12 +12,14 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 class UserController extends Controller
 {
-    public function dashboard(){
+    public function dashboard(): \Illuminate\Contracts\View\View|\Illuminate\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\Foundation\Application
+    {
         $movies=Movie::orderBy("id","desc")->paginate(6);
         return view("dashboard",compact("movies"));
     }
 
-    public function Useruploads(){
+    public function Useruploads(): \Illuminate\Contracts\View\View|\Illuminate\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\Foundation\Application
+    {
         $num=1;
         $user_id=Auth::id();
         $totals=Movie::where("user_id",$user_id)->count();
@@ -25,11 +27,13 @@ class UserController extends Controller
         return view("Useruploads",compact("totals","users","num"));
     }
 //  upload movie view
-    public function uploadmovie(){
+    public function uploadmovie(): \Illuminate\Contracts\View\View|\Illuminate\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\Foundation\Application
+    {
         return view("uploadmovie");
     }
 //  Submits the movie
-    public function submitmovie(Request $request){
+    public function submitmovie(Request $request): \Illuminate\Http\RedirectResponse
+    {
         $validate=$request->validate([
             "name"=>"required",
             "type"=>"required",
@@ -51,13 +55,15 @@ class UserController extends Controller
     }
 
 //  deletes the movie
-    public function delete($id){
+    public function delete($id): \Illuminate\Http\RedirectResponse
+    {
         Movie::where("id",$id)->delete();
         Review::where("movie_id",$id)->delete();
         return back();
     }
 //  shows detail of movie
-    public function detail($id){
+    public function detail($id): \Illuminate\Contracts\View\View|\Illuminate\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\Foundation\Application
+    {
         $user_id=Auth::id();
         $movie_id=$id;
         $recommend=Review::where("user_id",$user_id)->where("movie_id",$movie_id)->get();
@@ -68,7 +74,8 @@ class UserController extends Controller
 
     }
 //   submits the recommends movie
-    public function recommend(Request $request){
+    public function recommend(Request $request): \Illuminate\Http\RedirectResponse
+    {
         $user_id=Auth::id();
          Review::create([
              "movie_id"=>$request->movie_id,
@@ -78,24 +85,28 @@ class UserController extends Controller
         return back();
     }
 //   unrecommends the movie
-    public function unrecommend($id){
+    public function unrecommend($id): \Illuminate\Http\RedirectResponse
+    {
         Review::destroy($id);
         return back();
     }
     // show user recommends
-    public function user_recommends(){
+    public function user_recommends(): \Illuminate\Contracts\View\View|\Illuminate\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\Foundation\Application
+    {
         $users=User::all();
        $num=1;
         return view("recommend",compact("users","num"));
     }
 //  shows user detail
-    public function userdetail($id){
+    public function userdetail($id): \Illuminate\Contracts\View\View|\Illuminate\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\Foundation\Application
+    {
         $movies=Review::where("user_id",$id)->with("getData")->get();
         $user_name=User::find($id);
         return view("userdetail",compact("movies","user_name"));
     }
 
-    public function select(){
+    public function select(): \Illuminate\Contracts\View\View|\Illuminate\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\Foundation\Application
+    {
         $count=Review::with("getData")->select(DB::raw('movie_id, count(*) as count'))->groupBy('movie_id')->orderBy('count', 'desc')->first();
         $count_equal=Review::with("getData")->select(DB::raw('movie_id, count(*) as count'))->groupBy('movie_id')->orderBy('count', 'asc')->first();
         $day=Review::where("movie_id",$count->movie_id)->get();

@@ -48,5 +48,6 @@ return [
         'threads' => 1,
         'time' => 4,
     ],
+    'rehash_on_login' => false,
 
 ];
